@@ -37,7 +37,7 @@ _load_dotenv()
 BANNER_IMAGE = Path(__file__).with_name("banner.png")
 
 WELCOME_TEXT = (
-    "BIENVENUE CHEZ SpongeXotic 🧽🔌\n\n"
+    "BIENVENUE CHEZ SpongeXotic 🧽\n\n"
     "Nous vous souhaitons la bienvenue dans notre univers.\n\n"
     "Une boutique aux saveurs variées, pensée pour tous les goûts.\n\n"
     "🫟Le goût qui fait la différence.🫟\n"
