@@ -53,7 +53,7 @@ WELCOME_TEXT = (
     "L’exotisme dans l’ADN."
 )
 
-SNAPCHAT_URL = "https://snapchat.com/add/m_mara59"
+SNAPCHAT_URL = "https://snapchat.com/add/sponge_officiel"
 BOUTIQUE_URL = "https://nocturne-neon-boutique.lovable.app"
 
 # Chemin de la base de données SQLite qui stocke les chat_id des utilisateurs.
