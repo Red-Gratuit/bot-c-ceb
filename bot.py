@@ -37,15 +37,20 @@ _load_dotenv()
 BANNER_IMAGE = Path(__file__).with_name("banner.png")
 
 WELCOME_TEXT = (
-    "Bienvenue sur la boutique de Sponge Exotic !\n"
-    "🥳\n\n"
-    "Accédez à notre shop,\n"
-    "Rejoignez notre canal telegram ou notre\n"
-    "snapchat 👻\n\n"
-    "Nous vous proposons un large choix de produit\n"
-    "afin de vous satisfaire,\n"
-    "En cas de problème, n'oubliez de rejoindre tout\n"
-    "nos réseaux pour toujours nous retrouver !"
+    "BIENVENUE CHEZ SpongeXotic 🧽🔌\n\n"
+    "Nous vous souhaitons la bienvenue dans notre univers.\n\n"
+    "Une boutique aux saveurs variées, pensée pour tous les goûts.\n\n"
+    "🫟Le goût qui fait la différence.🫟\n"
+    "✨ Le service qui fait l’excellence.✨\n\n"
+    "━━━━━━━━━━━━━━\n\n"
+    "🌐 NOS PLATEFORMES OFFICIELLES\n\n"
+    "📢 Canal Telegram\n"
+    "💬 Contact Telegram\n"
+    "👻 Snapchat\n"
+    "📲 Mini-App\n\n"
+    "━━━━━━━━━━━━━━\n\n"
+    "🪼 SPONGEXOTIC®\n"
+    "L’exotisme dans l’ADN."
 )
 
 SNAPCHAT_URL = "https://snapchat.com/add/m_mara59"
