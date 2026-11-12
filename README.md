@@ -40,9 +40,13 @@ La fenêtre doit rester ouverte. Arrêt avec `Ctrl+C`.
 3. Ajoute les variables d'environnement :
    - `BOT_TOKEN` = le token donné par @BotFather
 4. Ajoute un **volume** Railway monté sur `/data` (pour que `bot.db` et la liste
-   des utilisateurs survivent aux redéploiements).
-5. Déploie. Railway expose ton domaine public et le bot passe automatiquement
-   en mode webhook (il définit lui-même l'URL du webhook).
+   des utilisateurs survivent aux redéploiements). Le bot détecte
+   automatiquement le volume et écrit dans `/data/bot.db`.
+5. Dans **Settings → Networking**, génère un domaine public et mets le port cible
+   sur `8080` (ou définis une variable `PORT` avec la valeur de ton choix, en
+   gardant le port cible identique).
+6. Déploie. Le bot passe automatiquement en mode webhook et enregistre lui-même
+   l'URL `https://<ton-domaine>/webhook`. Le healthcheck Railway utilise `/health`.
 
 ⚠️ Ce dépôt est **public** : le token ne doit jamais y apparaître. Utilise la
 variable d'environnement `BOT_TOKEN` sur Railway, et un fichier `.env` local

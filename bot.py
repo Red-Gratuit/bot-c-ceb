@@ -52,11 +52,18 @@ SNAPCHAT_URL = "https://snapchat.com/add/m_mara59"
 BOUTIQUE_URL = "https://nocturne-neon-boutique.lovable.app"
 
 # Chemin de la base de données SQLite qui stocke les chat_id des utilisateurs.
-# Sur Railway, on utilise /data (volume persistant). En local, bot.db à côté du script.
-if os.environ.get("RAILWAY_PUBLIC_DOMAIN"):
-    DB_PATH = Path(os.environ.get("DATABASE_PATH", "/data/bot.db"))
-else:
-    DB_PATH = Path(os.environ.get("DATABASE_PATH", str(Path(__file__).with_name("bot.db"))))
+# Priorité : DATABASE_PATH > volume Railway /data s'il existe > bot.db local.
+def _resolve_db_path() -> Path:
+    explicit = os.environ.get("DATABASE_PATH")
+    if explicit:
+        return Path(explicit)
+    volume = Path("/data")
+    if volume.is_dir():
+        return volume / "bot.db"
+    return Path(__file__).with_name("bot.db")
+
+
+DB_PATH = _resolve_db_path()
 
 # ---------------------------------------------------------------
 # JOURNALISATION
@@ -216,9 +223,15 @@ _application: Application | None = None
 
 
 async def _webhook_handler(request: web.Request) -> web.Response:
-    data = await request.json()
+    try:
+        data = await request.json()
+    except Exception:  # noqa: BLE001 — requête malformée : on répond 400
+        logger.warning("Requête webhook invalide reçue")
+        return web.Response(status=400)
+
     update = Update.de_json(data, _application.bot)
-    await _application.update_queue.put(update)
+    if update is not None:
+        await _application.update_queue.put(update)
     return web.Response(status=200)
 
 
@@ -227,10 +240,14 @@ async def _health_handler(request: web.Request) -> web.Response:
 
 
 async def _run_webhook(application: Application, webhook_url: str) -> None:
-    port = int(os.environ.get("PORT", "8443"))
+    port = int(os.environ.get("PORT", "8080"))
 
     await application.initialize()
-    await application.bot.set_webhook(url=webhook_url)
+    await application.bot.set_webhook(
+        url=webhook_url,
+        allowed_updates=Update.ALL_TYPES,
+        drop_pending_updates=True,
+    )
     await application.start()
 
     web_app = web.Application()
