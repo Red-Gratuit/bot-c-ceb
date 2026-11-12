@@ -42,11 +42,14 @@ La fenêtre doit rester ouverte. Arrêt avec `Ctrl+C`.
 4. Ajoute un **volume** Railway monté sur `/data` (pour que `bot.db` et la liste
    des utilisateurs survivent aux redéploiements). Le bot détecte
    automatiquement le volume et écrit dans `/data/bot.db`.
-5. Dans **Settings → Networking**, génère un domaine public et mets le port cible
-   sur `8080` (ou définis une variable `PORT` avec la valeur de ton choix, en
-   gardant le port cible identique).
-6. Déploie. Le bot passe automatiquement en mode webhook et enregistre lui-même
-   l'URL `https://<ton-domaine>/webhook`. Le healthcheck Railway utilise `/health`.
+5. Déploie. Le bot fonctionne dans les deux cas :
+   - **sans domaine public** → mode *polling* (le plus simple, rien à configurer) ;
+   - **avec un domaine public** (Settings → Networking) → mode *webhook*, le bot
+     enregistre lui-même `https://<ton-domaine>/webhook`. Pense alors à mettre le
+     port cible sur `8080` (ou à définir une variable `PORT` identique).
+   Dans les deux cas, un serveur HTTP répond sur `/health` pour le healthcheck.
+6. Redéploie après tout changement de code : le conteneur ne se met pas à jour
+   tout seul si l'auto-deploy GitHub n'est pas activé.
 
 ⚠️ Ce dépôt est **public** : le token ne doit jamais y apparaître. Utilise la
 variable d'environnement `BOT_TOKEN` sur Railway, et un fichier `.env` local
