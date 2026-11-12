@@ -239,28 +239,64 @@ async def _health_handler(request: web.Request) -> web.Response:
     return web.Response(status=200, text="OK")
 
 
-async def _run_webhook(application: Application, webhook_url: str) -> None:
+async def _start_health_server(port: int, with_webhook: bool) -> web.AppRunner | None:
+    """Démarre un petit serveur HTTP pour le healthcheck Railway.
+
+    En mode webhook, il sert aussi /webhook. En mode polling, il ne sert que
+    /health, ce qui suffit à Railway pour considérer le service comme sain.
+    """
+    web_app = web.Application()
+    web_app.router.add_get("/health", _health_handler)
+    if with_webhook:
+        web_app.router.add_post("/webhook", _webhook_handler)
+
+    runner = web.AppRunner(web_app, access_log=None)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    try:
+        await site.start()
+    except OSError as exc:
+        logger.warning("Serveur HTTP non démarré sur le port %s : %s", port, exc)
+        await runner.cleanup()
+        return None
+    logger.info("Serveur HTTP actif sur le port %s", port)
+    return runner
+
+
+async def _run(application: Application, webhook_url: str | None) -> None:
     port = int(os.environ.get("PORT", "8080"))
 
     await application.initialize()
-    await application.bot.set_webhook(
-        url=webhook_url,
-        allowed_updates=Update.ALL_TYPES,
-        drop_pending_updates=True,
-    )
+    runner = await _start_health_server(port, with_webhook=bool(webhook_url))
+
+    if webhook_url:
+        await application.bot.set_webhook(
+            url=webhook_url,
+            allowed_updates=Update.ALL_TYPES,
+            drop_pending_updates=True,
+        )
+        logger.info("Mode webhook (URL : %s)", webhook_url)
+    else:
+        # Pas de domaine public : on repasse en polling.
+        await application.bot.delete_webhook(drop_pending_updates=True)
+        logger.info("Mode polling (Ctrl+C pour arrêter)")
+
     await application.start()
+    if not webhook_url:
+        await application.updater.start_polling(
+            drop_pending_updates=True,
+            allowed_updates=Update.ALL_TYPES,
+        )
 
-    web_app = web.Application()
-    web_app.router.add_get("/health", _health_handler)
-    web_app.router.add_post("/webhook", _webhook_handler)
-
-    runner = web.AppRunner(web_app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    await site.start()
-
-    logger.info("Webhook actif sur le port %s (URL : %s)", port, webhook_url)
-    await asyncio.Event().wait()
+    try:
+        await asyncio.Event().wait()
+    finally:
+        if not webhook_url:
+            await application.updater.stop()
+        await application.stop()
+        await application.shutdown()
+        if runner is not None:
+            await runner.cleanup()
 
 
 def _build_application(token: str) -> Application:
@@ -284,20 +320,16 @@ def main() -> None:
     application = _build_application(token)
 
     # Sur Railway, RAILWAY_PUBLIC_DOMAIN est défini automatiquement → mode webhook.
+    # Sinon (ou si WEBHOOK_URL est fourni), on garde le polling.
     webhook_url = os.environ.get("WEBHOOK_URL")
     if not webhook_url and os.environ.get("RAILWAY_PUBLIC_DOMAIN"):
         webhook_url = f"https://{os.environ['RAILWAY_PUBLIC_DOMAIN']}/webhook"
 
     logger.info("Démarrage du bot Sponge Exotic...")
-
-    if webhook_url:
-        asyncio.run(_run_webhook(application, webhook_url))
-    else:
-        logger.info("Mode polling local (Ctrl+C pour arrêter).")
-        application.run_polling(
-            drop_pending_updates=True,
-            allowed_updates=Update.ALL_TYPES,
-        )
+    try:
+        asyncio.run(_run(application, webhook_url))
+    except KeyboardInterrupt:
+        logger.info("Arrêt demandé.")
 
 
 if __name__ == "__main__":
