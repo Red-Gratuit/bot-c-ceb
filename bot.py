@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 
 from aiohttp import web
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -129,7 +129,7 @@ async def get_all_chat_ids() -> list[int]:
 def _welcome_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
         [InlineKeyboardButton("👻 Snapchat", url=SNAPCHAT_URL)],
-        [InlineKeyboardButton("🛍️ Boutique", url=BOUTIQUE_URL)],
+        [InlineKeyboardButton("🛍️ Boutique", web_app=WebAppInfo(url=BOUTIQUE_URL))],
     ]
     return InlineKeyboardMarkup(keyboard)
 

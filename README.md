@@ -3,7 +3,8 @@
 Bot d'accueil qui répond à `/start` (ou à n'importe quel message) par la
 bannière, le message de bienvenue et deux boutons :
 - 👻 Snapchat → https://snapchat.com/add/m_mara59
-- 🛍️ Boutique → https://nocturne-neon-boutique.lovable.app
+- 🛍️ Boutique → ouvre le site comme une Mini App directement dans Telegram
+  (le site doit être accessible en HTTPS).
 
 Commandes :
 - `/start` : message de bienvenue (image + boutons).
