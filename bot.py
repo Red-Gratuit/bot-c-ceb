@@ -54,6 +54,8 @@ WELCOME_TEXT = (
 )
 
 SNAPCHAT_URL = "https://snapchat.com/add/sponge_officiel"
+TELEGRAM_CHANNEL_URL = "https://t.me/SpongeXotic"
+TELEGRAM_CONTACT_URL = "https://t.me/spongeXo"
 BOUTIQUE_URL = "https://nocturne-neon-boutique.lovable.app"
 
 # Chemin de la base de données SQLite qui stocke les chat_id des utilisateurs.
@@ -133,6 +135,8 @@ async def get_all_chat_ids() -> list[int]:
 # ---------------------------------------------------------------
 def _welcome_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
+        [InlineKeyboardButton("📢 Canal Telegram", url=TELEGRAM_CHANNEL_URL)],
+        [InlineKeyboardButton("💬 Contact Telegram", url=TELEGRAM_CONTACT_URL)],
         [InlineKeyboardButton("👻 Snapchat", url=SNAPCHAT_URL)],
         [InlineKeyboardButton("🛍️ Boutique", web_app=WebAppInfo(url=BOUTIQUE_URL))],
     ]

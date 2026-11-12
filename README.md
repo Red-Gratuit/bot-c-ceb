@@ -1,8 +1,10 @@
 # Bot Telegram — Sponge Exotic
 
 Bot d'accueil qui répond à `/start` (ou à n'importe quel message) par la
-bannière, le message de bienvenue et deux boutons :
-- 👻 Snapchat → https://snapchat.com/add/m_mara59
+bannière, le message de bienvenue et quatre boutons :
+- 📢 Canal Telegram → https://t.me/SpongeXotic
+- 💬 Contact Telegram → https://t.me/spongeXo
+- 👻 Snapchat → https://snapchat.com/add/sponge_officiel
 - 🛍️ Boutique → ouvre le site comme une Mini App directement dans Telegram
   (le site doit être accessible en HTTPS).
 
